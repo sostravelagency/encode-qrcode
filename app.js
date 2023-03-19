@@ -5,15 +5,9 @@ const qrcode = require("qrcode");
 const express = require("express");
 const cors = require("cors");
 const sharp = require("sharp");
-const qrcode_reader = require("qrcode-reader");
-const qr = new qrcode_reader();
 const QRReader = require("qrcode-reader");
-const sizeOf = require("image-size");
-const Base64 = require("js-base64").Base64;
 const Jimp = require("jimp");
 
-// const { createCanvas, loadImage } = require('canvas');
-const jsQR = require("jsqr");
 const app = express();
 
 app.use(express.json());
