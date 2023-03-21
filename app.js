@@ -70,7 +70,7 @@ app.post("/hide-message", (req, res) => {
     function (err, qrCodeDataURL) {
       if (err) throw err;
       // console.log(qrCodeDataURL);
-      return res.status(200).json(qrCodeDataURL);
+      return res.status(200).json({qrCode: qrCodeDataURL, encryptMessage: encryptedMessage});
     }
   );
 });
@@ -110,6 +110,17 @@ app.post("/decode-message", async (req, res) => {
       console.log("Không thể tạo image buffer từ chuỗi base64:", err);
     });
 });
+
+app.post("/decode-hide-message", (req, res)=> {
+  const {message }= req.body
+  const decryptedMessage = unshuffleString(
+    CryptoJS.AES.decrypt(
+      message,
+      key
+    ).toString(CryptoJS.enc.Utf8)
+  );
+  return res.status(200).json(decryptedMessage)
+})
 
 const PORT = 4000;
 app.listen(PORT, () => {

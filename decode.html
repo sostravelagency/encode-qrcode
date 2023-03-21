@@ -94,13 +94,30 @@
       <button type="button" class="btn btn-primary" onclick="decodeQRCode()">Giải mã</button>
     </div>
     <div class="form-group">
-      <label for="message">Tin nhắn được giải mã:</label>
+      <label for="message">Tin nhắn ở trong qr code:</label>
       <textarea class="form-control" id="message" rows="3" readonly></textarea>
     </div>
     <div class="alert alert-success" id="success-alert">
-      <strong>Thành công!</strong> Tin nhắn đã được giải mã từ ảnh QR code.
+      <strong>Thành công!</strong> Tin nhắn đã lấy từ từ ảnh QR code.
     </div>
     <div class="alert alert-danger" id="error-alert">
+      <strong>Lỗi!</strong> Xin hãy chọn ảnh QR code.
+    </div>
+    <div class="form-group">
+      <label for="message">Nhập tin nhắn mã hóa:</label>
+      <input type="text" class="form-control" id="e-message" placeholder="Nhập tin nhắn mã hóa">
+    </div>
+    <div class="form-group">
+      <button type="button" class="btn btn-primary" onclick="decodeHideMessage()">Giải mã</button>
+    </div>
+    <div class="form-group">
+      <label for="message">Tin nhắn được giải mã:</label>
+      <textarea class="form-control" id="e-r-message" rows="3" readonly></textarea>
+    </div>
+    <div class="alert alert-success" id="success-alert-m">
+      <strong>Thành công!</strong> Tin nhắn đã lấy từ từ ảnh QR code.
+    </div>
+    <div class="alert alert-danger" id="error-alert-m">
       <strong>Lỗi!</strong> Xin hãy chọn ảnh QR code.
     </div>
   </form>
@@ -138,6 +155,26 @@
     })
     const result= await res.data
     $("#message").val(result) 
+    return result;
+  }
+  // 
+
+  async function decodeHideMessage() {
+    if (!$("#e-message").val()) {
+      $("#error-alert-m").show();
+      $("#success-alert-m").hide();
+      return;
+    }
+    $("#error-alert-m").hide();
+    const res= await axios({
+      url: "http://localhost:4000/decode-hide-message",
+      method: "post",
+      data: {
+        message: $("#e-message").val()
+      }
+    })
+    const result= await res.data
+    $("#e-r-message").val(result) 
     return result;
   }
 </script>
