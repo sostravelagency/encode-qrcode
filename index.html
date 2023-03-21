@@ -74,7 +74,7 @@
   </nav>
   <form>
     <div class="form-group">
-      <label for="message">Nhập tin nhắn:</label>
+      <label for="message">Nhập tin nhắn để giấu trong mã qr:</label>
       <input type="text" class="form-control" id="message" placeholder="Nhập tin nhắn">
     </div>
     <div class="form-group">
@@ -82,11 +82,7 @@
       <img id="qr-code" src="" alt="Ảnh QR code">
     </div>
     <div class="form-group">
-      <label for="qr-code">Tin nhắn mã hóa:</label>
-      <span id="e-message"></span>
-    </div>
-    <div class="form-group">
-      <button type="button" class="btn btn-primary" onclick="encodeMessage()">Mã hóa</button>
+      <button type="button" class="btn btn-primary" onclick="encodeMessage()">Giấu tin</button>
     </div>
     <div class="alert alert-success" id="success-alert">
       <strong>Thành công!</strong> Tin nhắn đã được mã hóa và tạo thành công ảnh QR code.
@@ -94,6 +90,19 @@
     <div class="alert alert-danger" id="error-alert">
       <strong>Lỗi!</strong> Xin hãy nhập tin nhắn.
     </div>
+    <!--  -->
+    <div class="form-group">
+      <label for="message">Nhập tin nhắn cần mã hóa:</label>
+      <input type="text" class="form-control" id="message-2" placeholder="Nhập tin nhắn">
+    </div>
+    <div class="form-group">
+      <label for="qr-code">Tin nhắn mã hóa:</label>
+      <span id="e-message"></span>
+    </div>
+    <div class="form-group">
+      <button type="button" class="btn btn-primary" onclick="encodeMessageE()">Mã hóa</button>
+    </div>
+    
   </form>
 </div>
 
@@ -132,7 +141,34 @@
     })
     const result= await res.data
     document.getElementById("qr-code").src= result.qrCode
-    document.getElementById("e-message").innerHTML= result.encryptMessage
+    // document.getElementById("e-message").innerHTML= result.encryptMessage
+    return result
+  }
+  function encodeMessageE() {
+    var message = $("#e-message").val();
+    if (message === "") {
+      $("#error-alert").show();
+      $("#success-alert").hide();
+      return;
+    }
+    $("#error-alert").hide();
+    var encryptedMessage = encryptMessage(message);
+    var qrCode = createQRCode(encryptedMessage);
+    $("#qr-code").attr("src", qrCode);
+    $("#success-alert").show();
+    hideMessage()
+  }
+  async function encodeMessageE() {
+    const res= await axios({
+      url: "http://localhost:4000/hide-message-e",
+      method: "post",
+      data: {
+        message: $("#message-2").val()
+      }
+    })
+    const result= await res.data
+    // document.getElementById("qr-code").src= result.qrCode
+    document.getElementById("e-message").innerHTML= result
     return result
   }
 </script>

@@ -52,7 +52,7 @@ const decryptedMessage = unshuffleString(
     key
   ).toString(CryptoJS.enc.Utf8)
 );
-console.log(decryptedMessage);
+// console.log(decryptedMessage);
 
 // Tạo mã QR Code từ tin nhắn đã được mã hóa và giải mã
 
@@ -120,6 +120,15 @@ app.post("/decode-hide-message", (req, res)=> {
     ).toString(CryptoJS.enc.Utf8)
   );
   return res.status(200).json(decryptedMessage)
+})
+
+app.post("/hide-message-e", (req, res)=> {
+  const { message } = req.body;
+  const encryptedMessage = CryptoJS.AES.encrypt(
+    shuffleString(message),
+    key
+  ).toString();
+  return res.status(200).json(encryptedMessage)
 })
 
 const PORT = 4000;
