@@ -60,10 +60,11 @@ const decryptedMessage = unshuffleString(
 
 app.post("/hide-message", (req, res) => {
   const { message } = req.body;
-  const encryptedMessage = CryptoJS.AES.encrypt(
-    shuffleString(message),
-    key
-  ).toString();
+  // const encryptedMessage = CryptoJS.AES.encrypt(
+  //   shuffleString(message),
+  //   key
+  // ).toString();
+  const encryptedMessage= message
   qrcode.toDataURL(
     encryptedMessage,
     { errorCorrectionLevel: "H" },
@@ -131,7 +132,7 @@ app.post("/hide-message-e", (req, res)=> {
   return res.status(200).json(encryptedMessage)
 })
 
-const PORT = 4000;
+const PORT = 4001;
 app.listen(PORT, () => {
   console.log(`Server API đang chạy trên cổng ${PORT}`);
 });

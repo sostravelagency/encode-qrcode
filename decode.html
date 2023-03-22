@@ -1,183 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Giải mã ảnh QR code</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js" integrity="sha512-LUKzDoJKOLqnxGWWIBM4lzRBlxcva2ZTztO8bTcWPmDSpkErWx0bSP4pdsjNH8kiHAUPaT06UXcb+vOEZH+HpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  <style>
-    .container {
-      margin-top: 50px;
-    }
-    .form-group {
-      margin-top: 20px;
-    }
-    .alert {
-      margin-top: 20px;
-      display: none;
-    }
-    .header {
-      background-color: #f5f5f5;
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #ccc;
-    }
-    .header h1 {
-      margin: 0;
-    }
-    .container {
-      margin-top: 50px;
-    }
-    .form-group {
-      margin-top: 20px;
-    }
-    .alert {
-      margin-top: 20px;
-      display: none;
-    }
-    .header {
-      background-color: #f5f5f5;
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #ccc;
-    }
-    .header h1 {
-      margin: 0;
-    }
-    #nav-bar {
-      background-color: #343a40;
-      color: white;
-      padding: 0 20px;
-    }
-    #nav-bar a.nav-link {
-      color: white !important;
-      font-weight: bold;
-    }
-    #nav-bar a.nav-link.active {
-      border-bottom: 2px solid white;
-    }
-  </style>
-</head>
-<body>
-
-<div class="header">
-  <h1>Giải mã ảnh QR code</h1>
-</div>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="nav-bar">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link active" href="decode.html">Giải mã</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="index.html">Mã hóa</a>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<div class="container">
-  <form>
-    <div class="form-group">
-      <label for="qr-code">Chọn ảnh QR code:</label>
-      <input type="file" class="form-control-file" id="qr-code">
-    </div>
-    <div class="form-group">
-      <button type="button" class="btn btn-primary" onclick="decodeQRCode()">Giải mã</button>
-    </div>
-    <div class="form-group">
-      <label for="message">Tin nhắn ở trong qr code:</label>
-      <textarea class="form-control" id="message" rows="3" readonly></textarea>
-    </div>
-    <div class="alert alert-success" id="success-alert">
-      <strong>Thành công!</strong> Tin nhắn đã lấy từ từ ảnh QR code.
-    </div>
-    <div class="alert alert-danger" id="error-alert">
-      <strong>Lỗi!</strong> Xin hãy chọn ảnh QR code.
-    </div>
-    <div class="form-group">
-      <label for="message">Nhập tin nhắn mã hóa:</label>
-      <input type="text" class="form-control" id="e-message" placeholder="Nhập tin nhắn mã hóa">
-    </div>
-    <div class="form-group">
-      <button type="button" class="btn btn-primary" onclick="decodeHideMessage()">Giải mã</button>
-    </div>
-    <div class="form-group">
-      <label for="message">Tin nhắn được giải mã:</label>
-      <textarea class="form-control" id="e-r-message" rows="3" readonly></textarea>
-    </div>
-    <div class="alert alert-success" id="success-alert-m">
-      <strong>Thành công!</strong> Tin nhắn đã lấy từ từ ảnh QR code.
-    </div>
-    <div class="alert alert-danger" id="error-alert-m">
-      <strong>Lỗi!</strong> Xin hãy chọn ảnh QR code.
-    </div>
-  </form>
-</div>
-
-<script>
-  function decodeQRCode() {
-    var file = $("#qr-code").prop("files")[0];
-    if (!file) {
-      $("#error-alert").show();
-      $("#success-alert").hide();
-      return;
-    }
-    $("#error-alert").hide();
-    var reader = new FileReader();
-    reader.onload = async function(event) {
-      var imageData = event.target.result;
-      var decodedMessage = await decodeMessage(imageData);
-      $("#message").val(decodedMessage);
-      $("#success-alert").show();
-    };
-    reader.readAsDataURL(file);
-  }
-
-  async function decodeMessage(imageData) {
-    // TODO: Thực hiện giải mã tin nhắn từ ảnh QR code.
-    // console.log(imageData)
-    const res= await axios({
-      url: "http://localhost:4000/decode-message",
-      method: "post",
-      
-      data: {
-        qr_code: imageData
+  <head>
+    <title>Giấu ảnh vào trong mã qr</title>
+    <meta content="Ivan" name="author" />
+    <meta
+      content="This demo shows the core functionality of JavaScript library steganography.js, which provides functions to hide or read data in or from the alpha channel of an image."
+      name="description"
+    />
+    <meta
+      content="steganography, text hiding, javascript, html5"
+      name="keywords"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link href="css/styles.css" rel="stylesheet" />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: rgb(35, 64, 71);
+        color: #f3efef;
       }
-    })
-    const result= await res.data
-    $("#message").val(result) 
-    return result;
-  }
-  // 
-
-  async function decodeHideMessage() {
-    if (!$("#e-message").val()) {
-      $("#error-alert-m").show();
-      $("#success-alert-m").hide();
-      return;
-    }
-    $("#error-alert-m").hide();
-    const res= await axios({
-      url: "http://localhost:4000/decode-hide-message",
-      method: "post",
-      data: {
-        message: $("#e-message").val()
+      .caed {
+        background-color: rgb(35, 64, 71);
       }
-    })
-    const result= await res.data
-    $("#e-r-message").val(result) 
-    return result;
-  }
-</script>
-
-</body>
+      h1 {
+        color: black;
+        margin-bottom: 10px;
+      }
+      #main {
+        position: relative;
+        width: 940px;
+        padding: 20px;
+        margin: auto;
+      }
+      #right {
+        /* position:relative;
+        float:left;
+        margin: 10px;
+        width:600px;
+        vertical-align:top; */
+      }
+      #left {
+        position: relative;
+        float: left;
+        width: 260px;
+        padding: 10px;
+        margin-right: 10px;
+        border-right: 3px solid #7a91a1;
+        background-color: #e8e0ff;
+      }
+      .half {
+        position: relative;
+        display: inline-block;
+        width: 49%;
+      }
+      #original {
+        vertical-align: top;
+      }
+      #messageArea {
+        width: 100%;
+      }
+      #img {
+        /* height:85%; */
+      }
+      .btns {
+        margin-top: 15px;
+        margin-bottom: 10px;
+        padding: 0 40px;
+      }
+      /* .btn {
+        padding:10px 20px 10px 20px;
+        -moz-border-radius:15px;
+        -o-border-radius:15px;
+        -webkit-border-radius:15px;
+        border-radius:15px;
+        border:2px solid #FF4545;
+        cursor:pointer;
+        color:#FF4545;
+        background-color:white;
+        width:50px;
+        text-align:center;
+    } */
+      /* .btn:hover {
+        color:white;
+        background-color:#FF4545;
+    } */
+      #download {
+        /* position:absolute;
+        top:47px;
+        left:4px;
+        padding:10px 5px 5px 3px;
+        width:10px;
+        border-top:1px solid black;
+        -moz-border-radius:0 0 15px 15px;
+        -o-border-radius:0 0 15px 15px;
+        -webkit-border-radius:0 0 15px 15px;
+        border-radius:0 0 15px 15px;
+        text-decoration:none; */
+      }
+      /* #download:hover {
+        width:70px;
+    } */
+      /* #download:hover:after {
+        content:"ownload";
+    } */
+      #description {
+        line-height: 25px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid lightgrey;
+      }
+      #capacity {
+        font-weight: normal;
+        font-size: 15px;
+      }
+      .note {
+        font-size: 9px;
+        text-align: center;
+        color: black;
+      }
+      .invisible {
+        visibility: hidden;
+      }
+      .clear {
+        clear: both;
+      }
+      .footer {
+        margin-top: 25px;
+        width: 100%;
+        text-align: right;
+      }
+      textarea {
+        padding: 10px;
+        height: 200px;
+        width: 100%;
+        /* resize:none; */
+      }
+      h2 {
+        margin-top: 0;
+      }
+    </style>
+    <style>
+      .container {
+        margin-top: 50px;
+      }
+      .form-group {
+        margin-top: 20px;
+      }
+      .alert {
+        margin-top: 20px;
+        display: none;
+      }
+      .container {
+        margin-top: 50px;
+      }
+      .form-group {
+        margin-top: 20px;
+      }
+      .alert {
+        margin-top: 20px;
+        display: none;
+      }
+      .header {
+        background-color: #f5f5f5;
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #ccc;
+      }
+      .header h1 {
+        margin: 0;
+      }
+      #nav-bar {
+        background-color: #343a40;
+        color: white;
+        padding: 0 20px;
+      }
+      #nav-bar a.nav-link {
+        color: white !important;
+        font-weight: bold;
+      }
+      #nav-bar a.nav-link.active {
+        border-bottom: 2px solid white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-info">Giải mã</h1>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="nav-bar">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Mã hóa</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="decode.html">Giải mã</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h2 class="text-success">Chọn ảnh cần giải mã:</h2>
+            <input id="file" type="file" />
+          </div>
+          <div class="col-md-8" style="opacity: 0;">
+            <h2 class="text-warning">
+              Tin cần giấu:<span id="capacity"></span>
+            </h2>
+            <textarea id="text" placeholder="Nhập tin nhắn cần giấu"></textarea>
+            <div class="btns">
+              <span id="hide" class="btn btn-outline-warning">Giấu tin</span>
+              
+            </div>
+          </div>
+          <span id="read" class="btn btn-outline-success"
+            >Đọc tin</span>
+        </div>
+      </div>
+      <div id="messageArea" class="mb-3 pb-3 invisible">
+        <h2 class="text-info">Tin đã giấu là:</h2>
+        <div class="mb-3" id="message"></div>
+        <br>
+        <span id="copy" onclick="copyText()" class="btn btn-outline-info"
+          >Copy tin</span
+        >
+      </div>
+      <div id="right" class="row">
+        <div id="original" class="col-md-6" style="opacity: 0;">
+          <h2>Ảnh chưa giấu:</h2>
+          <div class="card">
+            <img id="img" class="card-img" src="images/ooppy.jpg" />
+          </div>
+        </div>
+        <div id="stego" class="col-md-6" style="opacity: 0;">
+          <h2>Ảnh đã giấu:</h2>
+          <div class="card">
+            <img id="cover" class="card-img" src="" />
+            <div class="card-img-overlay">
+              <a
+                id="download"
+                class="btn btn-success"
+                download="cover.png"
+                rel="nofollow"
+                >Tải ảnh đã giấu về</a
+              >
+            </div>
+          </div>
+          <!-- <img id="cover" src=""/>
+					<a id="download" class="btn btn-success" download="cover.png" rel="nofollow"></a> -->
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <script type="text/javascript" src="js/steganography.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+  </body>
 </html>
